@@ -1,50 +1,48 @@
 "use strict";
 
-var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Request = (function () {
-    function Request(method, params) {
+    function Request(baseUrl, method, params) {
         _classCallCheck(this, Request);
 
         this.xhr = new XMLHttpRequest();
-        this.url = undefined;
+        this.baseUrl = baseUrl;
+        this.path = undefined;
         this.params = params;
         this.method = method;
     }
 
     _createClass(Request, [{
-        key: "setUrl",
-        value: function setUrl(url) {
-            "use strict";
-            this.url = url;
+        key: "at",
+        value: function at(path) {
+            this.path = path;
+            return this;
         }
     }, {
         key: "now",
         value: function now() {
-            "use strict";
-
             var _this = this;
 
-            console.log(Request.config);
-            var url = this.url;
+            console.log("BASE: ", this.baseUrl);
+            console.log("PATH: ", this.path);
+            var paramString = "?";
             if (this.params != undefined) {
                 if (typeof this.params == "object") {
                     for (var key in this.params) {
-                        if (url != "") {
-                            url += "&";
+                        if (paramString != "?") {
+                            paramString += "&";
                         }
-                        url += key + "=" + encodeURIComponent(this.params[key]);
+                        paramString += key + "=" + encodeURIComponent(this.params[key]);
                     }
                 } else {
-                    url += this.params;
+                    paramString += this.params;
                 }
             }
+            var url = this.baseUrl + this.path + paramString;
+            console.log(url);
             return new Promise(function (resolve, reject) {
                 _this.xhr.open(_this.method.toUpperCase(), url);
                 _this.xhr.onreadystatechange = function (event) {
@@ -69,47 +67,34 @@ var Request = (function () {
     return Request;
 })();
 
-var Get = (function (_Request) {
-    _inherits(Get, _Request);
+var GoAnd = (function () {
+    function GoAnd(baseUrl, config) {
+        _classCallCheck(this, GoAnd);
 
-    function Get(params) {
-        _classCallCheck(this, Get);
-
-        _get(Object.getPrototypeOf(Get.prototype), "constructor", this).call(this, "get", params);
+        this.baseUrl = baseUrl || "";
+        this.format = "";
+        if (config != undefined) {
+            this.format = config.format || "";
+        }
         return this;
     }
 
-    //class Post extends Request {
-    //    constructor(data) {
-    //        super("post");
-    //        return this;
-    //    }
-    //    at(url) {
-    //        "use strict";
-    //        super.url = url;
-    //        return this;
-    //    }
-    //}
-
-    _createClass(Get, [{
-        key: "at",
-        value: function at(url) {
-            "use strict";
-            console.log(url);
-            _get(Object.getPrototypeOf(Get.prototype), "setUrl", this).call(this, url);
-            return this;
+    _createClass(GoAnd, [{
+        key: "get",
+        value: function get(params) {
+            return new Request(this.baseUrl, "get", params);
         }
+
+        //static post(params) {
+        //    return new Get(params);
+        //}
+        //static put(params) {
+        //    return new Get(params);
+        //}
+        //static delete(params) {
+        //    return new Get(params);
+        //}
     }]);
 
-    return Get;
-})(Request);
-
-var GoAnd = function GoAnd(config) {
-    Request.config = config;
-    return {
-        'get': function get(params) {
-            "use strict";
-            return new Get(params);
-        }
-    };
-};
+    return GoAnd;
+})();

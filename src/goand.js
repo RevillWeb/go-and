@@ -1,31 +1,33 @@
 class Request {
-    static config;
-    constructor(method, params) {
+    constructor(baseUrl, method, params) {
         this.xhr = new XMLHttpRequest();
-        this.url = undefined;
+        this.baseUrl = baseUrl;
+        this.path = undefined;
         this.params = params;
         this.method = method;
     }
-    setUrl(url) {
-        "use strict";
-        this.url = url;
+    at(path) {
+        this.path = path;
+        return this;
     }
     now() {
-        "use strict";
-        console.log(Request.config);
-        let url = this.url;
+        console.log("BASE: ", this.baseUrl);
+        console.log("PATH: ", this.path);
+        let paramString = "?";
         if (this.params != undefined) {
             if (typeof this.params == "object") {
                 for (var key in this.params) {
-                    if (url != "") {
-                        url += "&";
+                    if (paramString != "?") {
+                        paramString += "&";
                     }
-                    url += key + "=" + encodeURIComponent(this.params[key]);
+                    paramString += key + "=" + encodeURIComponent(this.params[key]);
                 }
             } else {
-                url += this.params;
+                paramString += this.params;
             }
         }
+        let url = this.baseUrl + this.path + paramString;
+        console.log(url);
         return new Promise((resolve, reject) => {
             this.xhr.open(this.method.toUpperCase(), url);
             this.xhr.onreadystatechange = function(event) {
@@ -47,43 +49,25 @@ class Request {
     }
 }
 
-class Get extends Request {
-    constructor(params) {
-        super("get", params);
-        return this;
-    }
-    at(url) {
-        "use strict";
-        console.log(url);
-        super.setUrl(url);
-        return this;
-    }
-}
-
 class GoAnd {
-    constructor(config) {
-
-    }
-}
-
-//class Post extends Request {
-//    constructor(data) {
-//        super("post");
-//        return this;
-//    }
-//    at(url) {
-//        "use strict";
-//        super.url = url;
-//        return this;
-//    }
-//}
-
-var GoAnd = function(config) {
-    Request.config = config;
-    return {
-        'get': function (params) {
-            "use strict";
-            return new Get(params);
+    constructor(baseUrl, config) {
+        this.baseUrl = baseUrl || "";
+        this.format = "";
+        if (config != undefined) {
+            this.format = config.format || "";
         }
-    };
-};
+        return this;
+    }
+    get(params) {
+        return new Request(this.baseUrl, "get", params);
+    }
+    //static post(params) {
+    //    return new Get(params);
+    //}
+    //static put(params) {
+    //    return new Get(params);
+    //}
+    //static delete(params) {
+    //    return new Get(params);
+    //}
+}
