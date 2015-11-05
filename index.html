@@ -5,8 +5,12 @@
     <title>GoAnd</title>
 </head>
 <body>
-
-<script src="dist/goand.js"></script>
-<script src="example.js"></script>
+    <script src="thirdparty/system.js"></script>
+    <script>
+        System.config({
+            baseURL: '/goand/es5'
+        });
+        System.import('example.js');
+    </script>
 </body>
 </html>

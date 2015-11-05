@@ -1,3 +1,4 @@
+import {GoAnd} from 'goand.js';
 
 var Petstore = new GoAnd("http://petstore.swagger.io/v2");
 
@@ -64,10 +65,7 @@ Petstore.put(myPetUpdated).at("/pet").then(function(response){
 });
 
 Petstore.delete({id: 1}).at("/pet/{id}").then(function(response){
-    console.log("PUT: ", response);
+    console.log("DELETE: ", response);
 }).catch(function(error){
     console.error("ERROR: ", error);
 });
-
-
-

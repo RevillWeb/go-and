@@ -17,7 +17,7 @@ class Request {
             this.xhr.open(this.method.toUpperCase(), url);
             this.xhr.onreadystatechange = function(event) {
                 if (event.target.readyState === 4) {
-                    var result = Request.fromJson(event.target.responseText);
+                    var result = (event.target.responseText.length > 0) ? Request.fromJson(event.target.responseText) : null;
                     if (event.target.status === 200) {
                         resolve(result);
                     } else {
@@ -55,8 +55,8 @@ class Request {
                 const find = "{" + key + "}";
                 if (url.indexOf(find) > -1) {
                     url = url.replace(find, params[key]);
+                    delete params[key];
                 }
-                delete params[key];
             }
         }
         return url;
