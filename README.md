@@ -82,4 +82,4 @@ Petstore.delete({id: 1}).at("/pet/{id}").then(function(response){
 
 #Running
 
-To see the client working, clone this repo and simple open `index.html` with the JavaScript console open.
+To see the client working, clone this repo and simply open `index.html` with the JavaScript console open.
